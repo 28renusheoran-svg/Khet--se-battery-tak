@@ -1,0 +1,19 @@
+{
+  "name": "Khet Se Battery Tak",
+  "short_name": "Khet Se Battery",
+  "description": "Ek Parali, Chaar Kamaal \u2014 green energy science exhibition app.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f7ef",
+  "theme_color": "#176b45",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#176b45">
+<meta name="description" content="Khet Se Battery Tak: an interactive green-energy science exhibition app.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Khet Se Battery Tak | Energy Dashboard</title>
+<style>
+:root{--green:#176b45;--green2:#23865a;--lime:#d8f36a;--ink:#18352a;--muted:#687b71;--cream:#f5f7ef;--card:#fff;--line:#e2e9df;--orange:#f2a541;--blue:#3d83c6}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+.app{max-width:1120px;margin:auto;min-height:100vh;padding:18px}
+header{background:linear-gradient(120deg,#104d35,#23865a);color:white;border-radius:24px;padding:24px;position:relative;overflow:hidden}
+header:after{content:"";position:absolute;width:230px;height:230px;border-radius:50%;background:#ffffff12;right:-45px;top:-85px}
+.brand{font-size:12px;letter-spacing:1.8px;text-transform:uppercase;color:#d8f36a;font-weight:800}
+h1{font-size:clamp(27px,4vw,42px);line-height:1.06;margin:10px 0 8px;max-width:650px}
+header p{margin:0;max-width:620px;color:#e3f1e8;line-height:1.5}
+.pill{display:inline-flex;align-items:center;gap:7px;background:#ffffff20;border:1px solid #ffffff30;padding:7px 11px;border-radius:999px;font-size:12px;margin-top:16px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--lime);display:inline-block}
+nav{display:flex;gap:8px;overflow:auto;padding:15px 0}
+nav button{border:1px solid var(--line);background:white;color:var(--muted);padding:10px 14px;border-radius:999px;white-space:nowrap;font-weight:700;cursor:pointer}
+nav button.active{background:var(--ink);color:white;border-color:var(--ink)}
+main{display:grid;gap:16px}
+.section{display:none}.section.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:0 5px 18px #173c2610}
+.metric-label{font-size:12px;color:var(--muted);font-weight:700}
+.metric{font-size:30px;font-weight:850;letter-spacing:-1px;margin:8px 0 4px}
+.unit{font-size:14px;font-weight:650;color:var(--muted);letter-spacing:0}
+.sub{font-size:12px;color:var(--muted)}
+.icon{width:37px;height:37px;border-radius:12px;background:#eaf5e8;display:grid;place-items:center;font-size:20px;margin-bottom:13px}
+.row{display:grid;grid-template-columns:1.25fr 1fr;gap:13px;margin-top:13px}
+h2{font-size:19px;margin:0 0 14px}
+h3{font-size:15px;margin:0 0 12px}
+.bar-row{display:grid;grid-template-columns:90px 1fr 55px;align-items:center;gap:10px;margin:14px 0;font-size:12px}
+.track{height:9px;background:#edf1e9;border-radius:99px;overflow:hidden}.fill{height:100%;border-radius:99px;background:var(--green2)}
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flow span{background:#edf6e9;border:1px solid #d8e8d3;border-radius:10px;padding:9px 10px;font-size:12px;font-weight:750}
+.flow b{color:#91a196}
+.notice{background:#fff6e6;border:1px solid #f4dfb7;border-radius:14px;padding:12px 14px;font-size:12px;line-height:1.5;color:#80561b;margin-top:13px}
+label{display:block;font-size:12px;font-weight:750;color:var(--muted);margin:12px 0 6px}
+input,select{width:100%;border:1px solid #dbe4d9;border-radius:10px;padding:11px;background:#fbfcf9;font:inherit;color:var(--ink)}
+button.primary{border:0;background:var(--green);color:white;border-radius:11px;padding:11px 15px;font-weight:800;cursor:pointer;margin-top:13px}
+button.secondary{border:1px solid var(--line);background:white;color:var(--ink);border-radius:11px;padding:10px 13px;font-weight:750;cursor:pointer}
+.result{background:#edf6e9;border-radius:13px;padding:14px;margin-top:13px}
+.result strong{font-size:24px;display:block;margin:4px 0}
+.small{font-size:11px;color:var(--muted);line-height:1.5}
+table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;padding:10px 7px;border-bottom:1px solid var(--line)}th{color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:22px 0 10px}
+.badge{font-size:10px;font-weight:800;letter-spacing:.5px;padding:5px 8px;border-radius:999px;background:#fff2d9;color:#8c5c12}
+@media(max-width:760px){.app{padding:12px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.row{grid-template-columns:1fr}header{padding:20px}.metric{font-size:27px}}
+@media(max-width:390px){.grid{gap:8px}.card{padding:13px}.bar-row{grid-template-columns:70px 1fr 45px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand">RSBVP 2026–27 · Green Energy & Environmental Conservation</div>
+  <h1>Khet Se Battery Tak</h1>
+  <p><strong>Ek Parali, Chaar Kamaal</strong> — turning farm residue and sunshine into heat, electricity, water solutions and future energy-storage materials.</p>
+  <div class="pill"><span class="dot"></span><span id="modeLabel">DEMO MODE · Sample readings</span></div>
+</header>
+<nav aria-label="App sections">
+  <button class="active" data-tab="dashboard">Dashboard</button>
+  <button data-tab="sources">Energy Sources</button>
+  <button data-tab="mitra">Parali Mitra</button>
+  <button data-tab="silica">Silicon Harvest</button>
+  <button data-tab="data">Experiments & Data</button>
+</nav>
+<main>
+<section class="section active" id="dashboard">
+  <div class="grid">
+    <div class="card"><div class="icon">🌡️</div><div class="metric-label">Hot-side temperature</div><div class="metric"><span id="hot">72.0</span><span class="unit"> °C</span></div><div class="sub">DS18B20 · sample value</div></div>
+    <div class="card"><div class="icon">💧</div><div class="metric-label">Cold-side temperature</div><div class="metric"><span id="cold">28.0</span><span class="unit"> °C</span></div><div class="sub">Cooling loop · sample value</div></div>
+    <div class="card"><div class="icon">⚡</div><div class="metric-label">Output voltage</div><div class="metric"><span id="volts">2.40</span><span class="unit"> V</span></div><div class="sub">INA219 / demo value</div></div>
+    <div class="card"><div class="icon">🔋</div><div class="metric-label">Output power</div><div class="metric"><span id="watts">0.48</span><span class="unit"> W</span></div><div class="sub">Voltage × current</div></div>
+  </div>
+  <div class="row">
+    <div class="card"><h2>Energy at a glance</h2>
+      <div class="bar-row"><span>Peltier</span><div class="track"><div class="fill" id="peltierBar" style="width:70%"></div></div><strong id="peltierVal">0.48 W</strong></div>
+      <div class="bar-row"><span>Steam turbine</span><div class="track"><div class="fill" style="width:34%;background:var(--orange)"></div></div><strong>0.23 W*</strong></div>
+      <div class="bar-row"><span>Micro-hydro</span><div class="track"><div class="fill" style="width:15%;background:var(--blue)"></div></div><strong>0.10 W*</strong></div>
+      <p class="small">*Illustrative values only. Replace these with readings measured during your own experiment.</p>
+    </div>
+    <div class="card"><h2>Project energy chain</h2>
+      <div class="flow"><span>☀️ Sun + Parali</span><b>→</b><span>♨️ Heat bank</span><b>→</b><span>⚡ Electricity</span><b>→</b><span>🔋 Storage</span><b>→</b><span>💡 Light</span></div>
+      <div class="notice"><strong>Science note:</strong> The model demonstrates small-scale electricity generation. Actual output depends on temperature difference, flow, module setup and measured conditions.</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:13px"><h2>Enter a reading</h2><p class="small">Use this panel to display your actual practice readings. These values are not connected to hardware yet.</p>
+    <div class="grid">
+      <div><label for="hotIn">Hot side (°C)</label><input id="hotIn" type="number" value="72" step="0.1"></div>
+      <div><label for="coldIn">Cold side (°C)</label><input id="coldIn" type="number" value="28" step="0.1"></div>
+      <div><label for="voltIn">Voltage (V)</label><input id="voltIn" type="number" value="2.4" step="0.01"></div>
+      <div><label for="ampIn">Current (A)</label><input id="ampIn" type="number" value="0.2" step="0.01"></div>
+    </div>
+    <button class="primary" onclick="updateReading()">Update dashboard</button>
+  </div>
+</section>
+
+<section class="section" id="sources">
+  <div class="card"><h2>Compare electricity sources</h2><p class="small">Enter the voltage and current measured for each source. Power is calculated as P = V × I.</p>
+    <table><thead><tr><th>Source</th><th>Voltage (V)</th><th>Current (A)</th><th>Power (W)</th></tr></thead>
+    <tbody>
+      <tr><td>Peltier modules</td><td><input id="pv" type="number" value="2.4" step="0.01" aria-label="Peltier voltage"></td><td><input id="pa" type="number" value="0.2" step="0.01" aria-label="Peltier current"></td><td id="pp">0.480</td></tr>
+      <tr><td>Steam turbine</td><td><input id="sv" type="number" value="1.8" step="0.01" aria-label="Steam turbine voltage"></td><td><input id="sa" type="number" value="0.1" step="0.01" aria-label="Steam turbine current"></td><td id="sp">0.180</td></tr>
+      <tr><td>Micro-hydro</td><td><input id="mv" type="number" value="1.2" step="0.01" aria-label="Micro hydro voltage"></td><td><input id="ma" type="number" value="0.05" step="0.01" aria-label="Micro hydro current"></td><td id="mp">0.060</td></tr>
+    </tbody></table>
+    <button class="primary" onclick="compareSources()">Calculate source power</button>
+    <div class="notice">These calculations do not imply that the outputs will be sufficient to charge a phone. Record real measurements and state the limitations honestly.</div>
+  </div>
+  <div class="card" style="margin-top:13px"><h2>Heat-bank insulation log</h2>
+    <p class="small">Enter a starting and ending temperature to compare heat retention over the test period.</p>
+    <div class="grid">
+      <div><label for="startTemp">Starting water temp (°C)</label><input id="startTemp" type="number" value="80"></div>
+      <div><label for="endTemp">Ending water temp (°C)</label><input id="endTemp" type="number" value="63"></div>
+      <div><label for="duration">Elapsed time (hours)</label><input id="duration" type="number" value="3" min="0.1" step="0.1"></div>
+      <div><label for="insulation">Insulation tested</label><select id="insulation"><option>Parali board</option><option>Rice husk</option><option>No insulation</option><option>Jute / coir</option></select></div>
+    </div>
+    <button class="primary" onclick="calcHeat()">Calculate heat retention</button>
+    <div class="result" id="heatResult">Temperature drop: <strong>17 °C</strong><span class="small">Temperature retention: 78.8% · replace sample readings with your own.</span></div>
+  </div>
+</section>
+
+<section class="section" id="mitra">
+  <div class="card"><h2>🌾 Parali Mitra</h2><p class="small">Estimate briquettes produced, possible income and residue diverted from field burning. Use locally verified rates and clearly state assumptions.</p>
+    <label for="parali">Parali collected (kg)</label><input id="parali" type="number" value="100" min="0">
+    <label for="conversion">Estimated briquette yield (%)</label><input id="conversion" type="number" value="80" min="0" max="100">
+    <label for="rate">Local briquette selling rate (₹/kg)</label><input id="rate" type="number" value="8" min="0" step="0.5">
+    <label for="factor">Emission factor for estimate (kg CO₂e per kg parali)</label><input id="factor" type="number" value="1.0" min="0" step="0.1">
+    <button class="primary" onclick="calcMitra()">Calculate estimate</button>
+    <div class="grid" style="margin-top:13px">
+      <div class="result"><span class="small">Estimated briquettes</span><strong id="briquettes">80 kg</strong></div>
+      <div class="result"><span class="small">Gross potential revenue</span><strong id="revenue">₹800</strong></div>
+      <div class="result"><span class="small">Parali diverted from burning</span><strong id="saved">100 kg</strong></div>
+      <div class="result"><span class="small">Illustrative emissions avoided</span><strong id="emissions">100 kg</strong></div>
+    </div>
+    <p class="small">Revenue is gross, not profit; collection, drying, processing and transport costs are not included. The emissions estimate is only as reliable as the emission factor entered.</p>
+  </div>
+</section>
+
+<section class="section" id="silica">
+  <div class="card"><h2>🧪 Silicon Harvest · Ash to silica</h2><p class="small">Enter your measured weights from the supervised school-lab experiment.</p>
+    <label for="straw">Parali burned (g)</label><input id="straw" type="number" value="500" min="0">
+    <label for="ash">Ash collected (g)</label><input id="ash" type="number" value="50" min="0">
+    <label for="silicaWeight">Silica recovered (g)</label><input id="silicaWeight" type="number" value="12" min="0">
+    <button class="primary" onclick="calcSilica()">Calculate yield</button>
+    <div class="grid" style="margin-top:13px">
+      <div class="result"><span class="small">Silica per 100 g ash</span><strong id="yieldAsh">24.0 g</strong></div>
+      <div class="result"><span class="small">Silica as % of parali mass</span><strong id="yieldStraw">2.4%</strong></div>
+    </div>
+    <div class="notice"><strong>Safety:</strong> Chemical extraction must be handled by the teacher in a proper lab with protective equipment. Do not perform the chemical process live at the exhibition. Extracted silica is not battery-grade silicon; making battery-grade silicon is a future step.</div>
+  </div>
+</section>
+
+<section class="section" id="data">
+  <div class="card"><h2>Experiments & data log</h2><p class="small">Add a practice observation. The entries remain in this page session; export them as a CSV for your report.</p>
+    <div class="grid">
+      <div><label for="expName">Experiment</label><select id="expName"><option> Peltier power output</option><option>Insulation test</option><option>Day versus night</option><option>Steam turbine comparison</option><option>Smoke comparison</option><option>Supercapacitor</option><option>Micro-hydro</option></select></div>
+      <div><label for="obsValue">Reading / observation</label><input id="obsValue" placeholder="e.g. 0.48 W or observed smoke"></div>
+      <div><label for="obsNote">Conditions / notes</label><input id="obsNote" placeholder="e.g. 7 pm, heat bank only"></div>
+      <div style="display:flex;align-items:end"><button class="primary" style="margin-top:0;width:100%" onclick="addObservation()">Add observation</button></div>
+    </div>
+    <div style="overflow:auto;margin-top:18px"><table><thead><tr><th>#</th><th>Experiment</th><th>Reading</th><th>Notes</th></tr></thead><tbody id="logBody"><tr><td colspan="4" class="small">No observations added yet.</td></tr></tbody></table></div>
+    <button class="secondary" onclick="exportCSV()">Export data as CSV</button>
+    <button class="secondary" onclick="clearLog()">Clear log</button>
+  </div>
+</section>
+</main>
+<footer>Indian Modern Senior Secondary School · Science exhibition prototype<br>Demo values are illustrative. Replace them with measured data before presenting to judges.</footer>
+</div>
+<script>
+const tabs=document.querySelectorAll('nav button');
+tabs.forEach(b=>b.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active')}));
+const num=id=>{const v=Number(document.getElementById(id).value);return Number.isFinite(v)?v:0};
+const fmt=(n,d=2)=>Number(n).toFixed(d);
+function updateReading(){
+ const h=num('hotIn'),c=num('coldIn'),v=num('voltIn'),a=num('ampIn'),p=v*a;
+ document.getElementById('hot').textContent=fmt(h,1);document.getElementById('cold').textContent=fmt(c,1);
+ document.getElementById('volts').textContent=fmt(v,2);document.getElementById('watts').textContent=fmt(p,3);
+ document.getElementById('peltierVal').textContent=fmt(p,3)+' W';
+ document.getElementById('peltierBar').style.width=Math.min(100,Math.max(0,p/0.7*100))+'%';
+ document.getElementById('modeLabel').textContent='MANUAL ENTRY · Not connected to sensors';
+}
+function compareSources(){
+ [['pv','pa','pp'],['sv','sa','sp'],['mv','ma','mp']].forEach(([v,a,p])=>document.getElementById(p).textContent=fmt(num(v)*num(a),3));
+}
+function calcHeat(){
+ const s=num('startTemp'),e=num('endTemp'),t=num('duration'),drop=s-e,ret=s!==0?e/s*100:0,rate=t>0?drop/t:0;
+ document.getElementById('heatResult').innerHTML='Temperature drop: <strong>'+fmt(drop,1)+' °C</strong><span class="small">Temperature retention: '+fmt(ret,1)+'% · Average drop: '+fmt(rate,1)+' °C/hour · Insulation: '+document.getElementById('insulation').value+'.</span>';
+}
+function calcMitra(){
+ const kg=Math.max(0,num('parali')),yieldPct=Math.min(100,Math.max(0,num('conversion')))/100,rate=Math.max(0,num('rate')),factor=Math.max(0,num('factor'));
+ document.getElementById('briquettes').textContent=fmt(kg*yieldPct,1)+' kg';
+ document.getElementById('revenue').textContent='₹'+Math.round(kg*yieldPct*rate).toLocaleString('en-IN');
+ document.getElementById('saved').textContent=fmt(kg,1)+' kg';
+ document.getElementById('emissions').textContent=fmt(kg*factor,1)+' kg CO₂e';
+}
+function calcSilica(){
+ const straw=Math.max(0,num('straw')),ash=Math.max(0,num('ash')),sil=Math.max(0,num('silicaWeight'));
+ document.getElementById('yieldAsh').textContent=ash>0?fmt(sil/ash*100,2)+' g':'—';
+ document.getElementById('yieldStraw').textContent=straw>0?fmt(sil/straw*100,2)+'%':'—';
+}
+let logs=[];
+function addObservation(){
+ const exp=document.getElementById('expName').value.trim(),val=document.getElementById('obsValue').value.trim(),note=document.getElementById('obsNote').value.trim();
+ if(!val){alert('Please enter a reading or observation first.');return}
+ logs.push({exp,val,note});renderLogs();document.getElementById('obsValue').value='';document.getElementById('obsNote').value='';
+}
+function renderLogs(){
+ const body=document.getElementById('logBody');
+ body.innerHTML=logs.length?logs.map((x,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(x.exp)}</td><td>${escapeHtml(x.val)}</td><td>${escapeHtml(x.note)}</td></tr>`).join(''):'<tr><td colspan="4" class="small">No observations added yet.</td></tr>';
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function exportCSV(){
+ if(!logs.length){alert('Add at least one observation before exporting.');return}
+ const rows=[['No.','Experiment','Reading','Notes'],...logs.map((x,i)=>[i+1,x.exp,x.val,x.note])];
+ const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='khet-se-battery-tak-data.csv';a.click();URL.revokeObjectURL(url);
+}
+function clearLog(){if(confirm('Clear all observations from this session?')){logs=[];renderLogs()}}
+calcMitra();calcSilica();compareSources();calcHeat();
+</script>
+<script>
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
